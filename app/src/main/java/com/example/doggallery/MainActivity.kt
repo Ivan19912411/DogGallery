@@ -10,38 +10,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.doggallery.ui.theme.DogGalleryTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // 👇 ИНИЦИАЛИЗИРУЕМ РУЧНОЙ DI (БД и Сеть) 👇
+        AppDependencies.init(applicationContext)
+
         setContent {
             DogGalleryTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    // Пока здесь заглушка, на следующем шаге мы добавим сюда NavDisplay
+                    Text(
+                        text = "Dog Gallery загружается...",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DogGalleryTheme {
-        Greeting("Android")
     }
 }

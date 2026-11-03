@@ -1,6 +1,8 @@
 package com.example.doggallery
 
 import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -44,5 +46,16 @@ object AppDependencies {
             .create(DogApi::class.java)
 
         repository = DogRepository(api, database.breedDao())
+    }
+}
+
+// 👇 Класс фабрики находится здесь, в самом низу, а все импорты (import) строго вверху! 👇
+class DogViewModelFactory(private val repository: DogRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(DogViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return DogViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
