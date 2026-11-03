@@ -1,4 +1,4 @@
-package com.example.doggallery.local
+package com.example.doggallery
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

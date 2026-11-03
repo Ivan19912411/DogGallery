@@ -1,10 +1,9 @@
-package com.example.doggallery.data.remote
+package com.example.doggallery
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import retrofit2.http.GET
 
-// Модели данных (DTO), которые приходят с сервера
 @JsonClass(generateAdapter = true)
 data class BreedDto(
     @Json(name = "id") val id: Int,
@@ -21,9 +20,7 @@ data class ImageDto(
     @Json(name = "url") val url: String?
 )
 
-// Интерфейс для Retrofit
 interface DogApi {
-    // Эндпоинт для получения списка пород
     @GET("breeds")
     suspend fun getBreeds(): List<BreedDto>
 }
