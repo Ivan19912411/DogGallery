@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox // Импорт для Pull-to-refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,41 +61,37 @@ fun HomeScreen(
                 singleLine = true
             )
 
-            if (isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (error != null) {
-                // Если произошла ошибка сети - показываем её и кнопку повтора
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "Ошибка: $error", color = MaterialTheme.colorScheme.error)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { viewModel.refresh() }) {
-                        Text("Повторить")
+            // 👇 ВОТ ТУТ МЫ ДОБАВИЛИ PULL-TO-REFRESH 👇
+            PullToRefreshBox(
+                isRefreshing = isLoading,
+                onRefresh = { viewModel.refresh() },
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (error != null) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(text = "Ошибка: $error", color = MaterialTheme.colorScheme.error)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = { viewModel.refresh() }) {
+                            Text("Повторить")
+                        }
                     }
-                }
-            } else if (breeds.isEmpty()) {
-                // Если данных нет (например, API вернул пустой список)
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("Список пуст или нет интернета")
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { viewModel.refresh() }) {
-                        Text("Обновить данные")
+                } else if (breeds.isEmpty() && !isLoading) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Список пуст. Потяните вниз для обновления.")
                     }
-                }
-            } else {
-                // Список собак
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(breeds) { breed ->
-                        BreedCard(breed = breed, onClick = { onBreedClick(breed.id) })
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(breeds) { breed ->
+                            BreedCard(breed = breed, onClick = { onBreedClick(breed.id) })
+                        }
                     }
                 }
             }

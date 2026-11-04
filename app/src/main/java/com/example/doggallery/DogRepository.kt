@@ -1,6 +1,7 @@
 package com.example.doggallery
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class DogRepository(
     private val api: DogApi,
@@ -11,8 +12,11 @@ class DogRepository(
     fun getBreedById(id: Int): Flow<BreedEntity?> = dao.getBreedById(id)
 
     suspend fun refreshBreeds() {
-        // Убрали try-catch, чтобы ошибка передалась в ViewModel
         val remoteBreeds = api.getBreeds()
+
+        // 👇 ФИКС: Получаем список ID тех, кто уже в избранном 👇
+        val favoriteIds = dao.getFavorites().first().map { it.id }.toSet()
+
         val entities = remoteBreeds.map { dto ->
             BreedEntity(
                 id = dto.id,
@@ -22,7 +26,8 @@ class DogRepository(
                 lifeSpan = dto.lifeSpan,
                 description = dto.description,
                 imageUrl = dto.image?.url,
-                isFavorite = false
+                // 👇 Если собака уже была в избранном - сохраняем true, иначе false 👇
+                isFavorite = favoriteIds.contains(dto.id)
             )
         }
         dao.insertBreeds(entities)
