@@ -34,8 +34,15 @@ object AppDependencies {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
+        // 👇 ЗДЕСЬ МЫ ДОБАВИЛИ ВАШ КЛЮЧ 👇
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .header("x-api-key", "live_Wm7PKlCpdb2iZe09VSOwvCEziFgv5bD9E6GkFmT6ty4d0kSEdVcnvF0XDAzCKxem")
+                    .build()
+                chain.proceed(request)
+            }
             .build()
 
         api = Retrofit.Builder()
@@ -49,7 +56,6 @@ object AppDependencies {
     }
 }
 
-// 👇 Класс фабрики находится здесь, в самом низу, а все импорты (import) строго вверху! 👇
 class DogViewModelFactory(private val repository: DogRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DogViewModel::class.java)) {

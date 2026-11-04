@@ -6,7 +6,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class DogViewModel(private val repository: DogRepository) : ViewModel() {
+// 👇 Убрали слово private перед repository 👇
+class DogViewModel(val repository: DogRepository) : ViewModel() {
 
     // Состояние поискового запроса
     private val _searchQuery = MutableStateFlow("")

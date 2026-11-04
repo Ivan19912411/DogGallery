@@ -11,24 +11,21 @@ class DogRepository(
     fun getBreedById(id: Int): Flow<BreedEntity?> = dao.getBreedById(id)
 
     suspend fun refreshBreeds() {
-        try {
-            val remoteBreeds = api.getBreeds()
-            val entities = remoteBreeds.map { dto ->
-                BreedEntity(
-                    id = dto.id,
-                    name = dto.name,
-                    temperament = dto.temperament,
-                    origin = dto.origin,
-                    lifeSpan = dto.lifeSpan,
-                    description = dto.description,
-                    imageUrl = dto.image?.url,
-                    isFavorite = false
-                )
-            }
-            dao.insertBreeds(entities)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        // Убрали try-catch, чтобы ошибка передалась в ViewModel
+        val remoteBreeds = api.getBreeds()
+        val entities = remoteBreeds.map { dto ->
+            BreedEntity(
+                id = dto.id,
+                name = dto.name,
+                temperament = dto.temperament,
+                origin = dto.origin,
+                lifeSpan = dto.lifeSpan,
+                description = dto.description,
+                imageUrl = dto.image?.url,
+                isFavorite = false
+            )
         }
+        dao.insertBreeds(entities)
     }
 
     suspend fun toggleFavorite(id: Int, isFavorite: Boolean) {
